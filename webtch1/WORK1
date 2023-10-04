@@ -1,0 +1,59 @@
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.stereotype.Service;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
+@Service
+public class EmailService {
+
+    @Autowired
+    private JavaMailSender emailSender;
+
+    public void sendConfirmationEmail(String recipientEmail) throws MessagingException, IOException {
+        MimeMessage message = emailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message,
+                MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
+                StandardCharsets.UTF_8.name());
+
+        helper.setTo(recipientEmail);
+        helper.setSubject("Submission Confirmation");
+        helper.setText(getEmailContent(), true);
+
+        // Add attachments (if needed)
+        // helper.addAttachment("certificate.pdf", new ClassPathResource("path/to/certificate.pdf"));
+
+        emailSender.send(message);
+    }
+
+    private String getEmailContent() throws IOException {
+        // Load and return the email template content as a string
+        // You can use a template engine like Thymeleaf or FreeMarker for more complex templates
+        return "Dear candidate, your submission has been confirmed.";
+    }
+}
+@RestController
+public class AdmissionController {
+
+    @Autowired
+    private EmailService emailService;
+
+    @PostMapping("/submit")
+    public ResponseEntity<String> submitAdmission() {
+        // Process admission submission
+        
+        // Send confirmation email
+        try {
+            emailService.sendConfirmationEmail("recipient@example.com");
+        } catch (MessagingException | IOException e) {
+            // Handle email sending failure
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send confirmation email.");
+        }
+
+        return ResponseEntity.ok("Admission submitted successfully.");
+    }
+}

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Student Admission</title>
+</head>
+<body>
+    <h1>Student Admission</h1>
+    <form action="/admission" method="post" enctype="multipart/form-data">
+        <label for="passport">Passport Picture (JPG/PNG):</label>
+        <input type="file" id="passport" name="passport" accept=".jpg, .png" required><br><br>
+        
+        <label for="certificates">Certificates (PDF):</label>
+        <input type="file" id="certificates" name="certificates" accept=".pdf" required><br><br>
+        
+        <input type="submit" value="Upload">
+    </form>
+</body>
+</html>
